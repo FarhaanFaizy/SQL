@@ -1,0 +1,220 @@
+Q.NO-1:
+
+Create the tables in the database.
+
+SQL> create Table Course(course_name varchar2(30),course_id number,department varchar2(10));
+
+Table created.
+
+SQL> create Table student(name varchar2(20),id number,course varchar2(30),semester number);
+
+Table created.
+
+SQL> create Table grade(id varchar2(10),semester number,course varchar2(30),grade number);
+
+Table created.
+
+SQL> alter table course add constraint pk_course primary key(course_name);
+
+Table altered.
+
+SQL> alter table student add foreign key (course) references course(course_name);
+
+Table altered.
+
+SQL> alter table grade add foreign key (course) references course(course_name);
+
+Table altered.
+
+SQL>alter table student add constraint pk_id primary key(id);
+
+Table altered.
+
+SQL> alter table grade add constraint pk_semester primary key(semester);
+
+Table altered.
+
+SQL> alter table student add foreign key (semester) references grade(semester);
+
+Table altered.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Q.NO-2:
+
+Alter the course table by adding a new attribute instructor.
+
+SQL> alter table course add instructor varchar(20);
+
+Table altered.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Q.NO-3:
+
+Alter the student table by modifying the datatype of Student_ID
+
+SQL> alter table student modify id varchar(10);
+
+Table altered.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Q.NO-4:
+
+Alter the course table by dropping instructor attribute.
+
+SQL>alter table course drop(instructor); 
+
+Table altered.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Q.NO-5:
+
+Show the structure of the grade table.
+
+SQL> desc grade;
+
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ID                                                 VARCHAR2(10)
+ SEMESTER                                           NUMBER
+ COURSE                                             VARCHAR2(30)
+ GRADE                                              NUMBER
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Q.NO-6:
+
+Load the database with data using insert statements.
+
+SQL> insert into course values('&course_name',&course_id,'&department');
+Enter value for course_name: C programming
+Enter value for course_id: 101
+Enter value for department: CSE
+
+SQL> /
+Enter value for course_name: BEEE
+Enter value for course_id: 401
+Enter value for department: ECE
+
+1 row created.
+
+SQL> /
+Enter value for course_name: PYTHON
+Enter value for course_id: 102
+Enter value for department: CSE
+
+SQL> /
+Enter value for course_name: DLD
+Enter value for course_id: 203
+Enter value for department: ECE
+
+SQL> /
+Enter value for course_name: FEM
+Enter value for course_id: 302
+Enter value for department: MEC
+
+SQL> /
+Enter value for course_name: Chemistrty
+Enter value for course_id: 501
+Enter value for department: CHEM
+
+SQL> insert into grade values(NULL,1,'DLD',9.2);
+SQL> insert into grade values(NULL,2,'C programming',9.8);
+SQL> insert into grade values(NULL,3,'BEEE',9.0);
+SQL> insert into grade values(NULL,4,'PYTHON',10);
+SQL> insert into grade values(NULL,5,'FEM',8.8);
+SQL> insert into grade values(NULL,6,'Chemistrty',8.0);
+
+
+SQL> insert into student values('raju','y25cs069','DLD','1')
+SQL> insert into student values('ramu','y24it042','C programming','2')
+SQL> insert into student values('sita','y23ec099','BEEE','3')
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Q.NO-7:
+
+Retrieve the contents of a table using select statements.
+
+SQL> select * from student;
+
+NAME                 ID         COURSE                           SEMESTER
+-------------------- ---------- ------------------------------ ----------
+raju                 y25cs069   DLD                                     1
+ramu                 y24it042   C programming                           2
+sita                 y23ec099   BEEE                                    3
+
+
+SQL> select * from grade;
+
+ID           SEMESTER COURSE                              GRADE
+---------- ---------- ------------------------------ ----------
+                    1 DLD                                   9.2
+                    2 C programming                         9.8
+                    3 BEEE                                    9
+                    4 PYTHON                                 10
+                    5 FEM                                   8.8
+                    6 Chemistrty                              8
+
+
+SQL> select * from course;
+
+COURSE_NAME                     COURSE_ID DEPARTMENT
+------------------------------ ---------- ----------
+C programming                         101 CSE
+BEEE                                  401 ECE
+PYTHON                                102 CSE
+DLD                                   203 ECE
+FEM                                   302 MEC
+Chemistrty                            501 CHEM
+6 rows selected.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Q.NO-8:
+
+Modify the contents of tables using update statements
+
+SQL> update grade set id='y25cs069' where course='DLD';
+
+SQL> update grade set id='y24it042' where course='C programming';
+
+SQL> update grade set id='y23ec099' where course='BEEE';
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Q.NO-9:
+
+Delete selected records from the tables.
+
+SQL>  delete from grade where semester=4;
+
+SQL>  delete from grade where semester=5;
+
+SQL>  delete from grade where semester=6;
+
+SQL> select * from grade;
+
+ID           SEMESTER COURSE                              GRADE
+---------- ---------- ------------------------------ ----------
+y25cs069            1 DLD                                   9.2
+y24it042            2 C programming                         9.8
+y23ec099            3 BEEE                                    9
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+10
+truncate a table
+
+SQL> truncate table demo;
+
+Table truncated.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+11
+drop student table.
+
+SQL> drop table student;
+
+Table dropped.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+12
+save the changes using commit
+SQL>commit;
+
+Commit complete.

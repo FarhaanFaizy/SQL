@@ -1,0 +1,34 @@
+DECLARE
+	n number;
+	f number:=0;
+	s number:=1;
+	fib number;
+BEGIN
+	n := &number;
+	DBMS_OUTPUT.PUT_LINE('0');
+	DBMS_OUTPUT.PUT_LINE('1');
+	for i in 1..n-2 LOOP
+		fib:=f+s;
+		f:=s;
+		s:=fib;
+		DBMS_OUTPUT.PUT_LINE(fib);
+	END LOOP;
+END;
+/
+
+
+
+=================
+output:
+
+SQL> @C:\Users\rvr\Desktop\PLSQL\fib.sql
+Enter value for number: 5
+old   7:        n := &number;
+new   7:        n := 5;
+0
+1
+1
+2
+3
+
+PL/SQL procedure successfully completed.

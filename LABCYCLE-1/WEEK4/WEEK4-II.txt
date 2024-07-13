@@ -1,0 +1,269 @@
+II. Write nested queries for answering the following queries that retrieve data from
+university database:
+========================================================================================
+1. Find the total number of (distinct) students who have taken course
+sections taught by the instructor with ID 110011
+
+SQL> select count(distinct id)
+  2  from takes
+  3  where sec_id in (
+  4  select sec_id from teaches
+  5  where id=11011
+  6  );
+
+COUNT(DISTINCTID)
+-----------------
+                0
+========================================================================================
+2. Find the names of all instructors whose salary is greater than at least one
+instructor in the Biology department
+
+SQL> select name
+  2  from instructor
+  3  where salary>(
+  4  select min(salary)
+  5  from instructor
+  6  where dept_name='Biology'
+  7  );
+
+NAME
+--------------------
+Wu
+Einstein
+Gold
+Katz
+Singh
+Brandt
+Kim
+
+7 rows selected.
+========================================================================================
+3. Find the departments that have the highest average salary.
+
+SQL> select dept_name
+  2  from instructor
+  3  group by dept_name
+  4  having avg(salary)=(
+  5  select max(Avg(salary))
+  6  from instructor 
+  7  group by dept_name);
+
+DEPT_NAME
+--------------------
+Physics
+========================================================================================
+4. Find all the courses taught in the both the Fall 2009 and Spring 2010
+semesters
+
+SQL> select title,course_id
+  2  from course
+  3  where course_id in
+  4  ( select course_id
+  5  from teaches
+  6  where semester='Fall' and year=2009
+  7  intersect 
+  8  select course_id
+  9  from teaches 
+ 10  where semester='Spring' and year=2010
+ 11  );
+
+TITLE                                              COURSE_I
+-------------------------------------------------- --------
+Intro. to Computer Science                         CS-101
+========================================================================================
+5. Find all the courses taught in the Fall 2009 semester but not in the Spring
+2010 semester.
+
+SQL> select title,course_id
+  2  from course
+  3  where course_id in
+  4  (
+  5  select course_id
+  6  from teaches 
+  7  where (semester='Fall' and year=2009) and (semester != 'Spring' and year !=2010)
+  8  );
+
+TITLE                                              COURSE_I
+-------------------------------------------------- --------
+Intro. to Computer Science                         CS-101
+Database System Concepts                           CS-347
+Physical Principles                                PHY-101
+========================================================================================
+6. Find all courses taught in both the Fall 2009 semester and in the Spring
+2010 semester. (Write correlated nested Query)
+
+SQL> select course_id
+  2  from teaches t1
+  3  where
+  4  (semester,year) in (('Fall',2009))
+  5  and exists
+  6  (select * from teaches
+  7  where t1.course_id=course_id
+  8  and (semester,year) in (('Spring',2010)));
+
+COURSE_I
+--------
+CS-101
+
+========================================================================================
+7. Find all students who have taken all courses offered in the Biology
+department. (Write Correlated nested Query)
+
+SQL> select distinct id
+  2  from takes t
+  3  where not exists(
+  4  (select course_id from course
+  5  where dept_name='Biology')
+  6  minus
+  7  (select course_id from takes
+  8  where id=t.id));
+
+no rows selected
+
+========================================================================================
+8. Find all courses that were offered at most once in 2009
+
+SQL> select distinct course_id
+  2  from teaches t
+  3  where course_id in
+  4  (select distinct course_id
+  5  from teaches
+  6  where year=2009
+  7  group by course_id
+  8  having count(course_id)<=1);
+
+COURSE_I
+--------
+BIO-101
+CS-101
+CS-347
+EE-181
+PHY-101
+
+========================================================================================
+9. Find all courses that were offered at least twice in 2009”
+
+SQL> select distinct course_id
+  2  from teaches t
+  3  where course_id in
+  4  (select distinct course_id
+  5  from teaches
+  6  where year=2009
+  7  group by course_id
+  8  having count(course_id)>1);
+
+COURSE_I
+--------
+CS-190
+
+========================================================================================
+10. Find the average instructors’ salaries of those departments where the
+average salary is greater than $42,000.
+
+SQL> select dept_name,avg(salary) Avg_Salary
+  2  from instructor 
+  3  group by dept_name
+  4  having avg(salary) in(
+  5  select avg(salary)
+  6  from instructor
+  7  group by dept_name
+  8  having avg(salary)>42000);
+
+DEPT_NAME            AVG_SALARY
+-------------------- ----------
+Biology                   72000
+Comp. Sci.           77333.3333
+Elec. Eng.                80000
+Finance                   85000
+History                   61000
+Physics                   91000
+
+6 rows selected.
+
+========================================================================================
+11. Find the departments with the maximum budget.
+
+SQL> select dept_name
+  2  from department 
+  3  where budget=(
+  4  select max(budget) from department);
+
+DEPT_NAME
+--------------------
+Finance
+========================================================================================
+12. Find the names of instructors who have not taught any course
+
+SQL> select name
+  2  from instructor i
+  3  where not exists(
+  4  select * 
+  5  from teaches
+  6  where i.id=id);
+
+NAME
+--------------------
+Gold
+Califieri
+Singh
+
+========================================================================================
+13. Find the IDs and names of all students who have not taken any course
+offering before Spring 2009.
+
+SQL> select distinct id , name
+  2  from student s
+  3  where exists(
+  4  select * from takes 
+  5  where s.id=id and
+  6  year<=2009 and semester='Fall')
+  7  or not exists(
+  8  select * from takes
+  9  where s.id=id);
+
+ID    NAME
+----- --------------------
+00128 Zhang
+12345 Shankar
+44553 Peltier
+45678 Levy
+54321 Williams
+70557 Snow
+76543 Brown
+98765 Bourikas
+
+8 rows selected.
+
+========================================================================================
+14. Find the lowest, across all departments, of the per-department maximum
+salary computed.
+
+SQL> select dept_name,salary from (
+  2  select dept_name,salary
+  3  from instructor i
+  4  where not exists(
+  5  select * from instructor 
+  6  where i.dept_name=dept_name and
+  7  i.salary<salary) and not exists (
+  8  select * from instructor
+  9  where i.salary>salary));
+
+DEPT_NAME                SALARY
+-------------------- ----------
+Music                     40000
+
+========================================================================================
+15. Display the IDs and names of the instructors who have taught all Comp. Sci.
+courses.
+
+SQL> select name,id
+  2   from instructor i
+  3  where  dept_name='Comp. sci.'
+  4  and not exists(
+  5   (select course_id from course where
+  6  dept_name='Comp. sci.')
+  7  minus
+  8  (select course_id from
+  9  teaches where i.id=id));
+
+no rows selected.

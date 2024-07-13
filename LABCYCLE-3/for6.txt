@@ -1,0 +1,5 @@
+SQL> create table emp6 (empid number ,ename varchar2(30),salary number,dno number);
+
+Table created.
+
+SQL> commit;

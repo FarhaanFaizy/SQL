@@ -1,0 +1,209 @@
+SQL> create table course(
+  2  course_name varchar2(30) unique,
+  3  course_id number primary key,
+  4  department varchar2(10) default 'cse'
+  5  );
+
+Table created.
+
+SQL> create table student
+  2  (
+  3   name varchar2(30) not null,
+  4   id varchar2(10) primary key,
+  5   course number references course (course_id),
+  6   semester number
+  7   );
+
+Table created.
+
+SQL> create table grade
+  2  (
+  3  id number,
+  4  semester number,
+  5  course number,
+  6  grade number,
+  7  constraint grade_chk check(grade between 5 and 10)
+  8  );
+
+Table created.
+
+--------------------------------------------------------------------------
+
+SQL> insert into course values ('c',null,'cse');
+insert into course values ('c',null,'cse')
+            *
+ERROR at line 1:
+ORA-01400: cannot insert NULL into ("Y21CS102"."COURSE"."COURSE_ID")
+
+-------
+
+SQL> insert into student values('faizy','y21cs102',78,2);
+insert into student values('faizy','y21cs102',78,2)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (Y21CS102.SYS_C0018252) violated - parent key
+not found
+
+------
+
+SQL> insert into grade values(12,2,212,3);
+insert into grade values(12,2,212,3)
+*
+ERROR at line 1:
+ORA-02290: check constraint (Y21CS102.GRADE_CHK) violated
+
+------
+
+SQL>  insert into course values('c',122,'cse');
+ insert into course values('c',122,'cse')
+*
+ERROR at line 1:
+ORA-00001: unique constraint (Y21CS102.SYS_C0018242) violated
+
+-----
+
+SQL> insert into student values(null,'y21cs102',111,2);
+insert into student values(null,'y21cs102',111,2)
+            *
+ERROR at line 1:
+ORA-01400: cannot insert NULL into ("Y21CS102"."STUDENT"."NAME")
+
+-------------------------------------------------------------------------
+
+SQL> update course set course_name='c' where course_id=121;
+update course set course_name='c' where course_id=121
+*
+ERROR at line 1:
+ORA-00001: unique constraint (Y21CS102.SYS_C0018242) violated
+
+-------
+
+SQL> update course set course_id=null where course_id=111;
+update course set course_id=null where course_id=111
+       *
+ERROR at line 1:
+ORA-01407: cannot update ("Y21CS102"."COURSE"."COURSE_ID") to NULL
+
+-------
+
+SQL> update grade set grade=3;
+update grade set grade=3
+*
+ERROR at line 1:
+ORA-02290: check constraint (Y21CS102.GRADE_CHK) violated
+
+------
+
+SQL> update student set name=null;
+update student set name=null
+       *
+ERROR at line 1:
+ORA-01407: cannot update ("Y21CS102"."STUDENT"."NAME") to NULL
+
+------
+
+SQL> update student set id=null;
+update student set id=null
+       *
+ERROR at line 1:
+ORA-01407: cannot update ("Y21CS102"."STUDENT"."ID") to NULL
+
+------
+
+SQL> update student set course=131 where name='faizy';
+update student set course=131 where name='faizy'
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (Y21CS102.SYS_C0018252) violated - parent key
+not found
+
+-------------------------------------------------------------------------
+
+SQL> delete from course ;
+delete from course
+*
+ERROR at line 1:
+ORA-02292: integrity constraint (Y21CS102.SYS_C0018252) violated - child record
+found
+
+------------------------------------------------------------------------
+SQL> select constraint_name,constraint_type,table_name from user_constraints;
+
+CONSTRAINT_NAME                C TABLE_NAME
+------------------------------ - ------------------------------
+SYS_C0018241                   P COURSE
+SYS_C0018242                   U COURSE
+SYS_C0018250                   C STUDENT
+SYS_C0018251                   P STUDENT
+SYS_C0018252                   R STUDENT
+
+------------------------
+
+SQL> alter table grade drop constraint grade_chk;
+
+Table altered.
+
+----------------------------
+
+
+SQL> alter table course drop constraint SYS_C0018242;
+
+Table altered.
+
+----------------------------
+
+SQL> alter table student drop constraint SYS_C0018252;
+
+Table altered.
+
+-------------------------------
+
+SQL> alter table student drop constraint SYS_C0018251;
+
+Table altered.
+
+------------------------------
+
+SQL> alter table student drop constraint SYS_C0018250;
+
+Table altered.
+
+--------------------------------
+
+SQL> alter table course drop constraint SYS_C0018241;
+
+Table altered.
+
+---------------------------------------------------------------------------
+SQL> alter table course add constraint pk_cid primary key (course_id);
+
+Table altered.
+
+-------------
+
+SQL> alter table student add constraint pk_sid primary key (id);
+
+Table altered.
+
+-----------
+
+SQL> alter table student
+  2  add foreign key (course) references course(course_id);
+
+Table altered.
+
+---------
+SQL> alter table course add constraint unq_cname unique(course_name);
+
+Table altered.
+
+----------
+SQL> alter table grade add constraint grade_chk check(grade between 5 and 10);
+
+Table altered.
+
+-----------
+
+SQL> alter table student modify name varchar2(30) not null;
+
+Table altered.

@@ -1,0 +1,262 @@
+Write SQL queries for retrieving data from multiple tables using Joins:
+
+
+1. Find all possible combinations of instructors and the courses they teach
+
+SQL> select name,title
+  2  from instructor i,teaches t,course c
+  3  where i.id=t.id and t.course_id=c.course_id;
+
+NAME                 TITLE
+-------------------- ---------------------------------
+Srinivasan           Intro. to Computer Science
+Srinivasan           Robotics
+Srinivasan           Database System Concepts
+Wu                   Investment Banking
+Mozart               Music Video Production
+Einstein             Physical Principles
+El Said              World History
+Katz                 Intro. to Computer Science
+Katz                 Image Processing
+Crick                Intro. to Biology
+Crick                Genetics
+Brandt               Game Design
+Brandt               Game Design
+Brandt               Image Processing
+Kim                  Intro. to Digital Systems
+
+15 rows selected.
+
+==============================================================================
+2. Retrieve the names of all instructors, along with their department names and
+department building name
+
+SQL> select name,d.dept_name ,building
+  2  from instructor i,department d
+  3  where i.dept_name=d.dept_name;
+
+NAME                 DEPT_NAME            BUILDING
+-------------------- -------------------- ----------
+Srinivasan           Comp. Sci.           Taylor
+Wu                   Finance              Painter
+Mozart               Music                Packard
+Einstein             Physics              Watson
+El Said              History              Painter
+Gold                 Physics              Watson
+Katz                 Comp. Sci.           Taylor
+Califieri            History              Painter
+Singh                Finance              Painter
+Crick                Biology              Watson
+Brandt               Comp. Sci.           Taylor
+Kim                  Elec. Eng.           Taylor
+
+12 rows selected.
+
+===========================================================================
+3. Find the names of instructors who have taught at least one course.
+
+SQL> select distinct name
+  2  from instructor i,teaches t
+  3  where i.id=t.id;
+
+NAME
+--------------------
+Brandt
+Crick
+Einstein
+El Said
+Katz
+Kim
+Mozart
+Srinivasan
+Wu
+
+9 rows selected.
+
+===========================================================================
+4. For the student with ID 12345 (or any other value), show all course_id and title
+of all courses registered for by the student.
+
+SQL> select c.course_id ,title
+  2  from course c,takes t
+  3  where t.course_id=c.course_id and t.id=12345;
+
+COURSE_I TITLE
+-------- ------------------------------------------
+CS-101   Intro. to Computer Science
+CS-190   Game Design
+CS-315   Robotics
+CS-347   Database System Concepts
+
+=====================================================================
+5. Find instructor names and course identifiers for instructors in the Computer
+Science department.
+
+SQL> select name,course_id
+  2  from instructor i,teaches t
+  3  where i.id=t.id and dept_name='Comp. Sci.';
+
+NAME                 COURSE_I
+-------------------- --------
+Srinivasan           CS-101
+Srinivasan           CS-315
+Srinivasan           CS-347
+Katz                 CS-101
+Katz                 CS-319
+Brandt               CS-190
+Brandt               CS-190
+Brandt               CS-319
+
+8 rows selected.
+
+========================================================================
+6. For all instructors in the university who have taught some course, find their
+names and the course ID of all courses they taught.
+
+SQL> select name,course_id
+  2  from instructor i,teaches t
+  3  where i.id=t.id;
+
+NAME                 COURSE_I
+-------------------- --------
+Srinivasan           CS-101
+Srinivasan           CS-315
+Srinivasan           CS-347
+Wu                   FIN-201
+Mozart               MU-199
+Einstein             PHY-101
+El Said              HIS-351
+Katz                 CS-101
+Katz                 CS-319
+Crick                BIO-101
+Crick                BIO-301
+Brandt               CS-190
+Brandt               CS-190
+Brandt               CS-319
+Kim                  EE-181
+
+15 rows selected.
+=================================================================
+7. Find the names of all instructors whose salary is greater than at least one
+instructor in the Biology department. Or Find the names of all instructors who
+earn more than the lowest paid instructor in the Biology department.
+
+SQL> select distinct i1.name
+  2  from instructor i1,instructor i2
+  3  where i2.dept_name='Biology' and i1.salary>i2.salary;
+
+NAME
+--------------------
+Brandt
+Einstein
+Gold
+Katz
+Kim
+Singh
+Wu
+
+7 rows selected.
+
+==================================================================
+8. Find full details of instructors who teach at least one course.
+
+SQL> select distinct i.*
+  2  from instructor i,teaches t
+  3  where i.id=t.id;
+
+ID    NAME                 DEPT_NAME                SALARY
+----- -------------------- -------------------- ----------
+10101 Srinivasan           Comp. Sci.                65000
+12121 Wu                   Finance                   90000
+15151 Mozart               Music                     40000
+22222 Einstein             Physics                   95000
+32343 El Said              History                   60000
+45565 Katz                 Comp. Sci.                75000
+76766 Crick                Biology                   72000
+83821 Brandt               Comp. Sci.                92000
+98345 Kim                  Elec. Eng.                80000
+
+9 rows selected.
+
+======================================================================
+9. Find the instructor names and the courses they taught for all instructors in the
+Biology department who have taught some course.
+
+SQL> select name,title
+  2  from instructor i,course c,teaches t
+  3  where i.id=t.id and c.course_id=t.course_id and i.dept_name='Biology';
+
+NAME                 TITLE
+-------------------- --------------------------------------------------
+Crick                Intro. to Biology
+Crick                Genetics
+
+=========================================================================
+10. . Find the set of all courses taught either in Fall 2009 or in Spring 2010, or both.
+
+SQL> select distinct c.*
+  2  from teaches t,course c
+  3  where t.course_id=c.course_id and (t.semester,t.year) in (('Fall',2009),('Spring',2010));
+
+COURSE_I TITLE                                              DEPT_NAME               CREDITS
+-------- -------------------------------------------------- -------------------- ----------
+CS-101   Intro. to Computer Science                         Comp. Sci.                    4
+CS-315   Robotics                                           Comp. Sci.                    3
+CS-319   Image Processing                                   Comp. Sci.                    3
+CS-347   Database System Concepts                           Comp. Sci.                    3
+FIN-201  Investment Banking                                 Finance                       3
+HIS-351  World History                                      History                       3
+MU-199   Music Video Production                             Music                         3
+PHY-101  Physical Principles                                Physics                       4
+
+8 rows selected.
+
+================================================================================
+11. Find all courses taught in the Fall 2009 semester but not in the Spring 2010
+semester. 
+
+SQL> select c.*
+  2  from course c,teaches t
+  3  where t.course_id=c.course_id and
+  4  (t.semester,t.year) in (('Fall',2009)) and (t.semester,t.year) not in (('Spring',2010));
+
+COURSE_I TITLE                                              DEPT_NAME               CREDITS
+-------- -------------------------------------------------- -------------------- ----------
+CS-101   Intro. to Computer Science                         Comp. Sci.                    4
+CS-347   Database System Concepts                           Comp. Sci.                    3
+PHY-101  Physical Principles                                Physics                       4
+
+===============================================================================
+12. Find the names of all students who have taken any Comp. Sci. course ever.
+(there should be no duplicate names)
+
+SQL> select distinct name
+  2  from student s,takes t
+  3  where s.id=t.id and course_id like 'CS%';
+
+NAME
+--------------------
+Bourikas
+Brown
+Levy
+Shankar
+Williams
+Zhang
+
+6 rows selected.
+
+===============================================================================
+13. Display the IDs of all instructors who have never taught a course. (Don’t write
+nested query)
+
+SQL> select id
+  2  from instructor
+  3  minus
+  4  select id 
+  5  from teaches;
+
+ID
+-----
+33456
+58583
+76543

@@ -1,0 +1,39 @@
+DECLARE
+	x number;
+	y number;
+	revx number:=0;
+	lenx number;
+BEGIN
+	x := &number;
+	y := x;
+	lenx := length(to_char(x));
+	for i in 1..lenx LOOP
+		revx:=(10*revx )+(y-10*floor(y/10));
+		y:=floor(y/10);
+	END LOOP;
+	IF x = revx THEN
+		DBMS_OUTPUT.PUT_LINE(x||' is palindrome');
+	ELSE
+		DBMS_OUTPUT.PUT_LINE(x||' is not a palindrome');
+	END IF;
+END;
+/
+
+==========================================
+OUTPUT:
+SQL> @C:\Users\rvr\Desktop\PLSQL\palindrome.sql
+Enter value for number: 1234
+old   7:        x := &number;
+new   7:        x := 1234;
+1234 is not a palindrome
+
+PL/SQL procedure successfully completed.
+
+==================
+SQL> @C:\Users\rvr\Desktop\PLSQL\palindrome.sql
+Enter value for number: 12321
+old   7:        x := &number;
+new   7:        x := 12321;
+12321 is palindrome
+
+PL/SQL procedure successfully completed.

@@ -1,0 +1,265 @@
+PLSQL (LAB CYCLE-4)
+=======================================================================================================================================================================
+1.	Write a stored procedure, raise_salary which accepts an employee number, increment and modifies salary of that employee in employee table. Modified salary = salary increase amount+ current salary. If employee number is not found or if the current salary is null, it should raise an exception. Otherwise, updates the salary.
+
+PROCEDURE:
+CREATE OR REPLACE PROCEDURE RAISE_SALARY(EMPNO IN VARCHAR,INCREMENT IN NUMBER) AS
+	MODIFIED_SALARY_TABLE EMPLOYEE.MODIFIED_SALARY%TYPE;
+	SALARY_TABLE EMPLOYEE.SALARY%TYPE;
+	EMP_CHECK EMPLOYEE.EMPID%TYPE;
+BEGIN
+	SELECT EMPID INTO EMP_CHECK FROM EMPLOYEE WHERE EMPID=EMPNO; 
+	SELECT SALARY INTO SALARY_TABLE FROM EMPLOYEE WHERE EMPID=EMPNO;
+	MODIFIED_SALARY_TABLE := SALARY_TABLE + INCREMENT;
+	UPDATE EMPLOYEE SET MODIFIED_SALARY = MODIFIED_SALARY_TABLE WHERE EMPID=EMPNO;
+EXCEPTION
+	WHEN NO_DATA_FOUND THEN
+		DBMS_OUTPUT.PUT_LINE('NO EMPLOYEE FOUND WITH ' || EMPNO);
+END RAISE_SALARY; 
+ 
+PLSQL ANONYMOUS BLOCK:
+DECLARE
+	EMPNO EMPLOYEE.EMPID%TYPE := '&EMPNO';
+	INCREMENT EMPLOYEE.SALARY%TYPE := &INCREMENT;
+BEGIN
+	RAISE_SALARY(EMPNO,INCREMENT);
+END;
+
+OUTPUT:
+
+SQL> 
+  1  DECLARE
+  2     EMPNO EMPLOYEE.EMPID%TYPE := '&EMPNO';
+  3     INCREMENT EMPLOYEE.SALARY%TYPE := &INCREMENT;
+  4  BEGIN
+  5     RAISE_SALARY(EMPNO,INCREMENT);
+  6* END;
+SQL> /
+Enter value for empno: E1
+old   2:        EMPNO EMPLOYEE.EMPID%TYPE := '&EMPNO';
+new   2:        EMPNO EMPLOYEE.EMPID%TYPE := 'E1';
+Enter value for increment: 500
+old   3:        INCREMENT EMPLOYEE.SALARY%TYPE := &INCREMENT;
+new   3:        INCREMENT EMPLOYEE.SALARY%TYPE := 500;
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT * FROM EMPLOYEE;
+
+EMPID      EMPNAME                       SALARY MODIFIED_SALARY
+---------- ------------------------- ---------- ---------------
+E1         BRUCE BANNER                  100000          100500
+E2         TONY STARK                     90000
+E3         CLINT BARTON                   80000
+
+SQL> 
+  1  DECLARE
+  2     EMPNO EMPLOYEE.EMPID%TYPE := '&EMPNO';
+  3     INCREMENT EMPLOYEE.SALARY%TYPE := &INCREMENT;
+  4  BEGIN
+  5     RAISE_SALARY(EMPNO,INCREMENT);
+  6* END;
+SQL> /
+Enter value for empno: E4
+old   2:        EMPNO EMPLOYEE.EMPID%TYPE := '&EMPNO';
+new   2:        EMPNO EMPLOYEE.EMPID%TYPE := 'E4';
+Enter value for increment: 500
+old   3:        INCREMENT EMPLOYEE.SALARY%TYPE := &INCREMENT;
+new   3:        INCREMENT EMPLOYEE.SALARY%TYPE := 500;
+NO EMPLOYEE FOUND WITH E4
+
+PL/SQL procedure successfully completed.
+=======================================================================================================================================================================
+2.	Write a PL/SQL function that accepts department number and returns the total salary of the department.
+
+FUNCTION:
+
+CREATE OR REPLACE FUNCTION SUMOFSAL(DNO_IN NUMBER) RETURN NUMBER IS
+	CURSOR EMP_CRSR IS
+		SELECT SAL FROM EMP WHERE DEPTNO=DNO_IN;
+	TOTAL_SAL EMP.SAL%TYPE := 0;
+	SAL EMP.SAL%TYPE;
+BEGIN
+	OPEN EMP_CRSR;
+	LOOP
+		FETCH EMP_CRSR INTO SAL;
+	EXIT WHEN EMP_CRSR%NOTFOUND;
+		TOTAL_SAL := TOTAL_SAL + SAL;
+	END LOOP;
+	CLOSE EMP_CRSR;
+	DBMS_OUTPUT.PUT_LINE(TOTAL_SAL);
+	RETURN TOTAL_SAL;
+END;
+
+PLSQL:
+
+DECLARE
+	DNO EMP.DEPTNO%TYPE := &DNO;
+	TOTAL_SAL EMP.SAL%TYPE;
+BEGIN
+	DBMS_OUTPUT.PUT_LINE('TOTAL SALARY OF DEPTNO ' || DNO || ' IS ' || SUMOFSAL(DNO));
+END;
+
+OUTPUT:
+
+Enter value for dno: 10
+old   2:        DNO EMP.DEPTNO%TYPE := &DNO;
+new   2:        DNO EMP.DEPTNO%TYPE := 10;
+8750
+TOTAL SALARY OF DEPTNO 10 IS 8750
+
+PL/SQL procedure successfully completed.
+=======================================================================================================================================================================
+3.	Write a PL/SQL block that computes increment of an employee in employee table by using incr function which takes employee number as argument, calculates increment and returns the same based on the following criteria:
+	If salary <= 3000 – increment = 30% of salary
+	If salary > 3000 and <= 6000– increment = 20% of salary
+	Else increment = 10% of salary. 
+
+FUNCTION:
+
+CREATE OR REPLACE FUNCTION INCR(EMPNO_IN NUMBER) RETURN NUMBER AS
+	INCREMENT NUMBER := 0;
+	SALARY NUMBER := 0;
+BEGIN
+	SELECT SAL INTO SALARY FROM EMP WHERE EMPNO=EMPNO_IN;
+	IF SALARY <= 3000 THEN
+		INCREMENT := SALARY*0.3;
+	ELSIF SALARY > 3000 AND SALARY <= 6000 THEN
+		INCREMENT := SALARY*0.2;
+	ELSE
+		INCREMENT := SALARY*0.1;
+	END IF;
+	RETURN INCREMENT;
+END;
+
+PL/SQL:
+
+DECLARE
+	ENO EMP.EMPNO%TYPE := &EMPNO;
+BEGIN
+	DBMS_OUTPUT.PUT_LINE('INCREMENT OF EMPNO ' || ENO || ' IS ' || INCR(ENO));
+END;
+
+Enter value for empno: 7934
+old   2:        ENO EMP.EMPNO%TYPE := &EMPNO;
+new   2:        ENO EMP.EMPNO%TYPE := 7934;
+INCREMENT OF EMPNO 7934 IS 390
+
+PL/SQL procedure successfully completed.
+=======================================================================================================================================================================
+4.	Write a stored procedure that displays the employee names and their total earnings from the Emp Table.Hint: Total earning of an employee = 12*(gross_salary+commission)
+
+PROCEDURE:
+
+CREATE OR REPLACE PROCEDURE TOTAL_SAL_CAL(EMPID_IN IN VARCHAR,COMMISSION IN NUMBER) AS
+	NAME_TAB VARCHAR(25);
+	SALARY_TAB NUMBER;
+	TOTAL_SALARY NUMBER;
+BEGIN
+	SELECT NAME,SALARY INTO NAME_TAB,SALARY_TAB FROM EMP WHERE EMPID=EMPID_IN;
+	TOTAL_SALARY := 12*(SALARY_TAB+COMMISSION);
+	DBMS_OUTPUT.PUT_LINE('NAME:' || NAME_TAB);
+	DBMS_OUTPUT.PUT_LINE('TOTAL_SALARY:' || TOTAL_SALARY);
+END TOTAL_SAL_CAL;
+
+PL/SQL:
+
+DECLARE
+	EMPID VARCHAR(10) := '&EMPID';
+	COMMISSION NUMBER:= &COMMISSION;
+BEGIN
+	TOTAL_SAL_CAL(EMPID,COMMISSION);
+END;
+
+OUTPUT:
+
+Enter value for empid: E4
+old   2:        EMPID VARCHAR(10) := '&EMPID';
+new   2:        EMPID VARCHAR(10) := 'E4';
+Enter value for commission: 500
+old   3:        COMMISSION NUMBER:= &COMMISSION;
+new   3:        COMMISSION NUMBER:= 500;
+NAME:STEPHEN STRANGE
+TOTAL_SALARY:366000
+
+PL/SQL procedure successfully completed.
+================================================================================================================================================================================
+5.	Create a database trigger that checks whether the new salary of employee is less than existing salary. If so, raise an appropriate exception and avoid that updation.
+
+TRIGGER CODE:
+
+CREATE OR REPLACE TRIGGER EMPTRGR BEFORE UPDATE OF SALARY ON EMP
+	FOR EACH ROW
+DECLARE
+	NEGATIVE_SALARY EXCEPTION;
+	PRAGMA EXCEPTION_INIT(NEGATIVE_SALARY,-20001);
+BEGIN
+	IF :NEW.SALARY < :OLD.SALARY THEN
+		RAISE_APPLICATION_ERROR(-20001,'SALARY IS LESS THAN EXISTING SALARY');
+	END IF;
+END;
+
+OUTPUT:
+SQL> UPDATE EMP SET SALARY = 20000 WHERE EMPID = 'E4';
+UPDATE EMP SET SALARY = 20000 WHERE EMPID = 'E4'
+       *
+ERROR at line 1:
+ORA-20001: SALARY IS LESS THAN EXISTING SALARY
+ORA-06512: at "SCOTT.EMPTRGR", line 6
+ORA-04088: error during execution of trigger 'SCOTT.EMPTRGR'
+
+
+SQL> UPDATE EMP SET SALARY = 30000 WHERE EMPID = 'E4';
+
+1 row updated.
+=======================================================================================================================================================================================
+
+6.	Consider the following tables
+PERSINFO
+EMPNO	NAME	AGE
+AUDITPERSINFO
+EMPNO	NAME	AGE	OPERATION	ODATE
+
+PERSINFO is the table for which the auditing must be performed and AUDITPERSINFO is the table which keeps track of the records deleted or modified. Create a database trigger audit_trial. This trigger is forced when an UPDATE or a DELETE is performed on the table PERSINFO. It first checks for the operation being performed on the table. Then depending on the operation, a variable (that corresponds to operation) is assigned the value ‘UPDATE’ or ‘DELETE’ and then inserts the updated/deleted record into AUDITPERSINFO.
+
+TRIGGER:
+
+CREATE OR REPLACE TRIGGER audit_trial
+AFTER DELETE OR UPDATE ON PERSINFO
+FOR EACH ROW
+DECLARE
+  operation VARCHAR2(10);
+BEGIN
+  IF DELETING THEN
+    operation := 'DELETE';
+    INSERT INTO AUDITPERSINFO (EMPNO, NAME, AGE, OPERATION, ODATE)
+    VALUES (:OLD.EMPNO, :OLD.NAME, :OLD.AGE, operation, SYSDATE);
+  ELSIF UPDATING THEN
+    operation := 'UPDATE';
+    INSERT INTO AUDITPERSINFO (EMPNO, NAME, AGE, OPERATION, ODATE)
+    VALUES (:NEW.EMPNO, :NEW.NAME, :NEW.AGE, operation, SYSDATE);
+  END IF;
+END;
+
+OUTPUT:
+
+SQL> UPDATE PERSINFO SET AGE = 53 WHERE EMPNO = 'E2';
+
+1 row updated.
+
+SQL> SELECT * FROM AUDITPERSINFO;
+
+EMPNO      NAME                             AGE OPERATION       ODATE
+---------- ------------------------- ---------- --------------- ---------
+E3         THOR ODINSON                    1600 DELETE          04-JUL-23
+E2         TONY STARK                        53 UPDATE          04-JUL-23
+
+SQL> DELETE FROM PERSINFO WHERE EMPNO = 'E3';
+
+1 row deleted.
+
+SQL> SELECT * FROM AUDITPERSINFO;
+
+EMPNO      NAME                             AGE OPERATION       ODATE
+---------- ------------------------- ---------- --------------- ---------
+E3         THOR ODINSON                    1600 DELETE          04-JUL-23

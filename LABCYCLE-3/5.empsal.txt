@@ -1,0 +1,42 @@
+DECLARE
+	pay number;
+	empno number;
+	name varchar2(30);
+	gr number;
+	net number;
+	hra number;
+	da number;
+	pf number;
+	pt number;
+	CURSOR run is
+		SELECT eno,ename,bp from emp4;
+BEGIN
+	OPEN run;
+	LOOP
+		FETCH run into empno,name,pay;
+		EXIT WHEN run%NOTFOUND;
+		hra:=pay*15/100;
+		da:=pay*62/100;
+		pt:=pay*2/100;
+		gr:=hra+da+pay;
+		if gr>8000 then
+			pf:=720;
+		else
+			pf:=600;
+		END IF;
+		net:=gr-pf-pt;
+		DBMS_OUTPUT.PUT_LINE('EMPNO:'||empno||' '||'EMPname:'||name||' '||'HRA:'||hra||' '||'DA:'||da||' '||'PF:'||pf||' '||'TAX:'||pt||' '||'GROSS:'||gr||' '||'NET:'||net);
+	END LOOP;
+END;
+/
+
+
+output:
+
+SQL> @C:\Users\rvr\Desktop\PLSQL\sal.sql
+EMPNO:11021 EMPname:Farhaan HRA:1500 DA:6200 PF:720 TAX:200 GROSS:17700 NET:16780
+EMPNO:11022 EMPname:Faizy HRA:600 DA:2480 PF:600 TAX:80 GROSS:7080 NET:6400
+EMPNO:11022 EMPname:Fannu HRA:1200 DA:4960 PF:720 TAX:160 GROSS:14160 NET:13280
+EMPNO:11022 EMPname:Mohammed HRA:1350 DA:5580 PF:720 TAX:180 GROSS:15930 NET:15030
+
+PL/SQL procedure successfully completed.

@@ -1,0 +1,42 @@
+DECLARE
+	num1 number;
+	num2 number:=0;
+	lcm number;
+	hcf number;
+	big number;
+BEGIN
+	num1 := &number;
+	num2 := &number;
+	big := num1*num2;
+	FOR i in 1..big LOOP
+		IF i<=num1 and i<=num2 then
+			IF mod(num1,i)=0 and mod(num2,i)=0 then
+				hcf:=i;
+			END IF;
+		END IF;
+	END LOOP;
+	lcm:=num1*num2/hcf;
+	dbms_output.put_line('LCM = '||lcm);
+	dbms_output.put_line('HCF = '||hcf);
+	INSERT INTO DEMO_TAB VALUES(NUM1,NUM2,LCM,HCF);
+END;
+/
+
+output:
+SQL> @C:\Users\rvr\Desktop\PLSQL\fib.sql
+Enter value for number: 2
+old   8:        num1 := &number;
+new   8:        num1 := 2;
+Enter value for number: 3
+old   9:        num2 := &number;
+new   9:        num2 := 3;
+LCM = 6
+HCF = 1
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from demo_tab;
+
+      NUM1       NUM2        LCM        HCF
+---------- ---------- ---------- ----------
+         2          3          6          1

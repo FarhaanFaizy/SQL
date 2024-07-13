@@ -1,0 +1,62 @@
+DECLARE
+	id number;
+	q number;
+	n number;
+	CURSOR run is
+		SELECT pid,quantity from inventory;
+BEGIN
+	OPEN run;
+	n:=&Pid_number;
+	LOOP
+		FETCH run into id,q;
+		EXIT WHEN run%NOTFOUND;
+		if id=n then
+			if q>0 then
+				update inventory set quantity=q-1 where pid=n;
+				insert into purchase_record values(n,'Purchased',sysdate);
+			else
+				 insert into purchase_record values(n,'OutOfStock',sysdate);
+			END if;
+		END if;
+	END LOOP;
+END;
+/
+
+
+
+
+output:
+
+SQL> @C:\Users\rvr\Desktop\PLSQL\inventory.sql
+Enter value for pid_number: 102
+old   9:        n:=&Pid_number;
+new   9:        n:=102;
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from purchase_record;
+
+       PID STATUS     DATE_
+---------- ---------- ---------
+       102 OutOfStock 01-JUL-23
+
+SQL> @C:\Users\rvr\Desktop\PLSQL\inventory.sql
+Enter value for pid_number: 101
+old   9:        n:=&Pid_number;
+new   9:        n:=101;
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from purchase_record;
+
+       PID STATUS     DATE_
+---------- ---------- ---------
+       102 OutOfStock 01-JUL-23
+       101 Purchased  01-JUL-23
+
+SQL> select * from inventory;
+
+       PID PNAME                  QUANTITY
+---------- -------------------- ----------
+       101 jphone                        1
+       102 jwatch                        0

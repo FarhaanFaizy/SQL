@@ -1,0 +1,188 @@
+SQL> create Table Emp(eno number, name varchar2(20),department varchar2(10),date_of_joining date);
+
+Table created.
+
+SQL> insert into Emp values(102,'faizy','cse','20-nov-2021');
+
+1 row created.
+
+SQL> select * from Emp;
+
+       ENO NAME                 DEPARTMENT DATE_OF_J
+---------- -------------------- ---------- ---------
+       102 faizy                cse        20-NOV-21
+
+SQL> insert into Emp values(&Employee_number ,'&Employee_name','&Department','&joining_date');
+Enter value for employee_number: 105
+Enter value for employee_name: rajavardhan
+Enter value for department: ece
+Enter value for joining_date: 25-dec-2021
+old   1: insert into Emp values(&Employee_number ,'&Employee_name','&Department','&joining_date')
+new   1: insert into Emp values(105 ,'rajavardhan','ece','25-dec-2021')
+
+1 row created.
+
+SQL> /
+Enter value for employee_number: 94
+Enter value for employee_name: abhiram
+Enter value for department: mec
+Enter value for joining_date: 01-jan-2022
+old   1: insert into Emp values(&Employee_number ,'&Employee_name','&Department','&joining_date')
+new   1: insert into Emp values(94 ,'abhiram','mec','01-jan-2022')
+
+1 row created.
+
+SQL> /
+Enter value for employee_number: 95
+Enter value for employee_name: bhargav
+Enter value for department: ce
+Enter value for joining_date: 25-nov-2021
+old   1: insert into Emp values(&Employee_number ,'&Employee_name','&Department','&joining_date')
+new   1: insert into Emp values(95 ,'bhargav','ce','25-nov-2021')
+
+1 row created.
+
+
+SQL> /
+Enter value for employee_number: 106
+Enter value for employee_name: mahalakshmi
+Enter value for department: eee
+Enter value for joining_date: 02-dec-2021
+old   1: insert into Emp values(&Employee_number ,'&Employee_name','&Department','&joining_date')
+new   1: insert into Emp values(106 ,'mahalakshmi','eee','02-dec-2021')
+
+1 row created.
+
+SQL> select * from Emp;
+
+       ENO NAME                 DEPARTMENT DATE_OF_J
+---------- -------------------- ---------- ---------
+       102 faizy                cse        20-NOV-21
+       105 rajavardhan          ece        25-DEC-21
+        94 abhiram              mec        01-JAN-22
+        95 bhargav              ce         25-NOV-21
+       106 mahalakshmi          eee        02-DEC-21
+
+SQL> Alter table Emp add sal varchar2(10);
+
+Table altered.
+
+SQL> Alter table Emp modify sal number;
+
+Table altered.
+
+SQL> update Emp set sal=100000 where eno=102;
+
+1 row updated.
+
+SQL> update Emp set sal=&salary where eno=&number;
+Enter value for salary: 90000
+Enter value for number: 105
+old   1: update Emp set sal=&salary where eno=&number
+new   1: update Emp set sal=90000 where eno=105
+
+1 row updated.
+
+SQL> /
+Enter value for salary: 95000
+Enter value for number: 94
+old   1: update Emp set sal=&salary where eno=&number
+new   1: update Emp set sal=95000 where eno=94
+
+1 row updated.
+
+SQL> /
+Enter value for salary: 80000
+Enter value for number: 95
+old   1: update Emp set sal=&salary where eno=&number
+new   1: update Emp set sal=80000 where eno=95
+
+1 row updated.
+
+SQL> /
+Enter value for salary: 80000
+Enter value for number: 106
+old   1: update Emp set sal=&salary where eno=&number
+new   1: update Emp set sal=80000 where eno=106
+
+1 row updated.
+
+SQL> select * from Emp;
+
+       ENO NAME                 DEPARTMENT DATE_OF_J        SAL
+---------- -------------------- ---------- --------- ----------
+       102 faizy                cse        20-NOV-21     100000
+       105 rajavardhan          ece        25-DEC-21      90000
+        94 abhiram              mec        01-JAN-22      95000
+        95 bhargav              ce         25-NOV-21      80000
+       106 mahalakshmi          eee        02-DEC-21      80000
+
+SQL> update Emp set Eno=&number where department='&dept';
+Enter value for number: 95
+Enter value for dept: mec
+old   1: update Emp set Eno=&number where department='&dept'
+new   1: update Emp set Eno=95 where department='mec'
+
+1 row updated.
+
+SQL> /
+Enter value for number: 94
+Enter value for dept: ce
+old   1: update Emp set Eno=&number where department='&dept'
+new   1: update Emp set Eno=94 where department='ce'
+
+1 row updated.
+
+SQL> select * from Emp;
+
+       ENO NAME                 DEPARTMENT DATE_OF_J        SAL
+---------- -------------------- ---------- --------- ----------
+       102 faizy                cse        20-NOV-21     100000
+       105 rajavardhan          ece        25-DEC-21      90000
+        95 abhiram              mec        01-JAN-22      95000
+        94 bhargav              ce         25-NOV-21      80000
+       106 mahalakshmi          eee        02-DEC-21      80000
+
+SQL> Alter table Emp drop (sal);
+
+Table altered.
+
+SQL> select * from Emp;
+
+       ENO NAME                 DEPARTMENT DATE_OF_J
+---------- -------------------- ---------- ---------
+       102 faizy                cse        20-NOV-21
+       105 rajavardhan          ece        25-DEC-21
+        95 abhiram              mec        01-JAN-22
+        94 bhargav              ce         25-NOV-21
+       106 mahalakshmi          eee        02-DEC-21
+
+SQL> delete from Emp where department='ece';
+
+1 row deleted.
+
+SQL> delete from Emp where eno=95;
+
+1 row deleted.
+
+SQL> select * from Emp;
+
+
+       ENO NAME                 DEPARTMENT DATE_OF_J
+---------- -------------------- ---------- ---------
+       102 faizy                cse        20-NOV-21
+        94 bhargav              ce         25-NOV-21
+       106 mahalakshmi          eee        02-DEC-21
+
+SQL> delete from Emp;
+
+3 rows deleted.
+
+SQL> select * from Emp;
+
+no rows selected
+
+SQL> Drop table Emp;
+
+Table dropped.
+
